@@ -17,8 +17,5 @@ For preparing characters for armature in HSR, WUWA, or ZZZ, please use the follo
 
 ## Contributing
 
-Feel free to contribute to this repository by submitting issues or pull requests. Please ensure to follow the contribution guidelines provided.
+Feel free to contribute to this repository by submitting issues or pull requests.
 
-## License
-
-This repository is licensed under the [MIT License](LICENSE).
