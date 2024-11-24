@@ -1,0 +1,56 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Full Version
+    - name: Move contents to QuickImportXXMI folder (Full)
+      run: |
+        mkdir QuickImportXXMI_Full
+        shopt -s extglob
+        mv !(QuickImportXXMI_Full|QuickImportXXMI_NoResources) QuickImportXXMI_Full
+
+    - name: Create zip of full repository
+      run: zip -r QuickImportXXMI_Full_${{ github.ref_name }}.zip QuickImportXXMI_Full
+
+    # No Resources Version
+    - name: Create NoResources version
+      run: |
+        mkdir -p QuickImportXXMI_NoResources
+        cp -r QuickImportXXMI_Full/* QuickImportXXMI_NoResources/
+        rm -rf QuickImportXXMI_NoResources/quickimport/resources/faces
+        rm -rf QuickImportXXMI_NoResources/quickimport/resources/armatures
+
+    - name: Create zip of NoResources version
+      run: zip -r QuickImportXXMI_NoResources_${{ github.ref_name }}.zip QuickImportXXMI_NoResources
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          QuickImportXXMI_Full_${{ github.ref_name }}.zip
+          QuickImportXXMI_NoResources_${{ github.ref_name }}.zip
+        name: Release ${{ github.ref_name }}
+        body: |
+          See the [changelog](https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}) for details.
+          
+          This release includes two versions:
+          - Full version: Contains all resources
+          - NoResources version: Excludes faces and armatures resources
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
