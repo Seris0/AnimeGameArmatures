@@ -1,0 +1,32 @@
+name: Sync Armatures to QuickImportXXMI
+
+on:
+  push:
+    paths:
+      - 'GI/**'
+      - 'HSR/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout AnimeGameArmatures
+      uses: actions/checkout@v3
+
+    - name: Clone QuickImportXXMI
+      run: |
+        git clone https://x-access-token:${{ secrets.QUICKIMPORT_PAT }}@github.com/Seris0/QuickImportXXMI.git
+        mkdir -p QuickImportXXMI/quickimport/resources/armatures/GI
+        mkdir -p QuickImportXXMI/quickimport/resources/armatures/HSR
+        cp -r GI/* QuickImportXXMI/quickimport/resources/armatures/GI/ || true
+        cp -r HSR/* QuickImportXXMI/quickimport/resources/armatures/HSR/ || true
+
+    - name: Commit and push changes
+      run: |
+        cd QuickImportXXMI
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+        git add quickimport/resources/armatures/
+        git commit -m "Sync new armatures from AnimeGameAssets" || echo "No changes to commit"
+        git push
