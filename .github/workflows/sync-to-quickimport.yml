@@ -28,5 +28,7 @@ jobs:
         git config user.name "GitHub Action"
         git config user.email "action@github.com"
         git add quickimport/resources/armatures/
-        git commit -m "Sync new armatures from AnimeGameAssets" || echo "No changes to commit"
+        files=$(git diff --cached --name-only | xargs -n 1 basename | tr '\n' ' ')
+        msg="Sync new armatures from AnimeGameArmatures: $files"
+        git commit -m "$msg" || echo "No changes to commit"
         git push
